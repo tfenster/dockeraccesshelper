@@ -21,15 +21,44 @@ function Add-AccountToDockerAccess {
     [String[]]
     $Account
   )
-
+    $pre_ErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "SilentlyContinue"
 
     $fullControl =[System.Security.AccessControl.FileSystemRights]::FullControl
     $allow =[System.Security.AccessControl.AccessControlType]::Allow
 
+    $pipe_windows = $true
+    try {
+        $ps = (docker -H npipe:////./pipe/docker_engine_windows ps) | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            $pipe_windows = $false
+        }
+    } catch{
+        $pipe_windows = $false
+    }
+
+    if (-not $pipe_windows) {
+        $pipe_non_windows = $true
+        try {
+            $ps = (docker -H npipe:////./pipe/docker_engine ps) | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                $pipe_non_windows = $false
+            }
+        } catch{
+            $pipe_non_windows = $false
+        }
+    }
+
+    $ErrorActionPreference = $pre_ErrorActionPreference
+
+    if (-not $pipe_windows -and -not $pipe_non_windows) {
+        Write-Host "Unable to reach the Docker engine. Are your sure Docker is running and reachable?"
+        return
+    }
+    
     $npipe = "\\.\pipe\docker_engine"
-    $osname = (Get-CimInstance win32_operatingsystem).caption
-    if ($osname -like "* Windows 10 *") {
-        $npipe = "\\.\pipe\docker_engine_windows"
+    if ($pipe_windows) {
+     $npipe = "\\.\pipe\docker_engine_windows"
     }
 
     $dInfo = New-Object "System.IO.DirectoryInfo" -ArgumentList $npipe
