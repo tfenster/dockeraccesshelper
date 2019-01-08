@@ -108,8 +108,8 @@ PrivateData = @{
 
         # 'ReleaseNotes' des Moduls
         ReleaseNotes = '0.0.1: Initial
-        0.0.2: Verion bump without code change...
-        0.0.3: Attempt to automatically detect the correct npipe to use'
+        0.0.2: Attempt to automatically detect the correct npipe to use
+        0.0.3: fix misleading output'
 
     } # Ende der PSData-Hashtabelle
 
