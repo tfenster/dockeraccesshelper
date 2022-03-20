@@ -16,7 +16,7 @@ PS C:\Windows\system32> Add-AccountToDockerAccess "CONTOSO\PMILLER"
 For more details see https://www.axians-infoma.com/techblog/allow-access-to-the-docker-engine-without-admin-rights-on-windows/
 
 
-# Manually runing commands in case Import-Module is not preferred 
+## Manually runing commands in case Import-Module is not preferred 
 
 ```
 $account="<DOMAIN>\<USERNAME>"
@@ -29,3 +29,8 @@ $rule = New-Object "System.Security.AccessControl.FileSystemAccessRule" -Argumen
 $dSec.AddAccessRule($rule)                                                                                        
 $dInfo.SetAccessControl($dSec)
 ```
+
+## If running PowerShell 7 or newer
+Newer versions of PowerShell do not support the classes/methods currently used by `dockeraccesshelper`. If you face errors like `Method invocation failed because [System.IO.DirectoryInfo] does not contain a method named 'GetAccessControl'.`, you can work around this by:
+- temporarily switch to PowerShell 5.1 (or earlier)
+- use PowerShell ISE to execute the manual commands
